@@ -2,7 +2,7 @@ name: Naukri Resume Upload
 
 on:
   schedule:
-    - cron: '0 2 * * *'  # 8 AM IST
+    - cron: '0 2 * * *'  # daily at 8 AM IST
   workflow_dispatch:
 
 jobs:
@@ -10,16 +10,10 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Setup Maven
+      - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
