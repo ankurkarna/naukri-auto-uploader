@@ -2,65 +2,21 @@ name: Daily Naukri Resume Upload
 
 on:
   schedule:
-    # Runs every day at 8:00 AM IST (2:30 AM UTC)
-    - cron: '30 2 * * *'
+    - cron: "30 2 * * *" # 8:00 AM IST
   workflow_dispatch:
 
 jobs:
-  upload-resume:
+  upload:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Setup Python
+      - uses: actions/checkout@v3
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
-
-      - name: Install dependencies
-        run: pip install requests selenium webdriver-manager
-
-      - name: Run upload script
+          python-version: "3.x"
+      - name: Install requests
+        run: pip install requests
+      - name: Upload Resume
         env:
-          NAUKRI_EMAIL: ${{ secrets.NAUKRI_EMAIL }}
-          NAUKRI_PASSWORD: ${{ secrets.NAUKRI_PASSWORD }}
-        run: |
-          python << 'EOF'
-          import os, time
-          from selenium import webdriver
-          from selenium.webdriver.common.by import By
-          from selenium.webdriver.chrome.service import Service
-          from webdriver_manager.chrome import ChromeDriverManager
-
-          email = os.getenv("NAUKRI_EMAIL")
-          password = os.getenv("NAUKRI_PASSWORD")
-          resume_path = "resume/AnkurKarna_Resume.pdf"
-
-          options = webdriver.ChromeOptions()
-          options.add_argument("--headless")
-          options.add_argument("--no-sandbox")
-          options.add_argument("--disable-dev-shm-usage")
-
-          driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-
-          # Open Naukri login page
-          driver.get("https://www.naukri.com/nlogin/login")
-
-          time.sleep(3)
-          driver.find_element(By.ID, "usernameField").send_keys(email)
-          driver.find_element(By.ID, "passwordField").send_keys(password)
-          driver.find_element(By.XPATH, "//button[text()='Login']").click()
-
-          time.sleep(5)
-          driver.get("https://www.naukri.com/mnjuser/profile")
-
-          time.sleep(5)
-          upload_button = driver.find_element(By.XPATH, "//input[@type='file']")
-          upload_button.send_keys(os.path.abspath(resume_path))
-
-          time.sleep(10)
-          driver.quit()
-          EOF
+          NAUKRI_AUTH: ${{ secrets.NAUKRI_AUTH }}
+        run: python upload_resume.py
