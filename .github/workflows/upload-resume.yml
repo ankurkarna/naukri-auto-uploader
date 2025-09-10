@@ -33,4 +33,4 @@ jobs:
 
       # 5. Run Selenium uploader
       - name: Run resume upload
-        run: mvn exec:java -Dexec.mainClass="com.ankur.NaukriUploader"
+        run: mvn exec:java
