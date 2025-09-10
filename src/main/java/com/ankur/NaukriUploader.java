@@ -7,44 +7,16 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
 public class NaukriUploader {
-
-    public static void unzip(String zipFilePath, String destDir) throws IOException {
-        File dir = new File(destDir);
-        if (!dir.exists()) dir.mkdirs();
-        byte[] buffer = new byte[1024];
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFilePath))) {
-            ZipEntry zipEntry = zis.getNextEntry();
-            while (zipEntry != null) {
-                File newFile = new File(destDir, zipEntry.getName());
-                if (zipEntry.isDirectory()) newFile.mkdirs();
-                else {
-                    new File(newFile.getParent()).mkdirs();
-                    Files.copy(zis, newFile.toPath());
-                }
-                zipEntry = zis.getNextEntry();
-            }
-        }
-    }
-
     public static void main(String[] args) {
         WebDriverManager.edgedriver().setup();
 
-        String zipPath = "./selenium-profile/myprofile.zip";
-        String extractPath = "./selenium-profile/myprofile";
+        // Use the pre-unzipped profile from workflow
+        String profilePath = "./selenium-profile/myprofile";
 
         try {
-            unzip(zipPath, extractPath);
-
             EdgeOptions options = new EdgeOptions();
-            options.addArguments("user-data-dir=" + extractPath);
+            options.addArguments("user-data-dir=" + profilePath);
 
             WebDriver driver = new EdgeDriver(options);
 
