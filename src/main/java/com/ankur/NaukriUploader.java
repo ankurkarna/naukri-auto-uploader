@@ -7,54 +7,25 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.io.FileInputStream;
-
 public class NaukriUploader {
-
-    // Utility to unzip profile
-    public static void unzip(String zipFilePath, String destDir) throws IOException {
-        File dir = new File(destDir);
-        if(!dir.exists()) dir.mkdirs();
-        byte[] buffer = new byte[1024];
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFilePath))) {
-            ZipEntry zipEntry = zis.getNextEntry();
-            while (zipEntry != null) {
-                File newFile = new File(destDir, zipEntry.getName());
-                if (zipEntry.isDirectory()) {
-                    newFile.mkdirs();
-                } else {
-                    new File(newFile.getParent()).mkdirs();
-                    Files.copy(zis, newFile.toPath());
-                }
-                zipEntry = zis.getNextEntry();
-            }
-        }
-    }
-
     public static void main(String[] args) {
-        WebDriverManager.edgedriver().setup();
-
-        String zipPath = "./selenium-profile/myprofile.zip";
-        String extractPath = "./selenium-profile/myprofile";
-
         try {
-            // unzip profile
-            unzip(zipPath, extractPath);
+            // Setup EdgeDriver
+            WebDriverManager.edgedriver().setup();
 
+            // Hardcoded profile path (unzipped in workflow)
+            String profilePath = "./selenium-profile/myprofile";
             EdgeOptions options = new EdgeOptions();
-            options.addArguments("user-data-dir=" + extractPath);
+            options.addArguments("user-data-dir=" + profilePath);
 
+            // Initialize driver
             WebDriver driver = new EdgeDriver(options);
 
+            // Go to Naukri profile page
             driver.get("https://www.naukri.com/mnjuser/profile");
-            Thread.sleep(5000);
+            Thread.sleep(5000); // Wait for page load
 
+            // Upload resume
             WebElement uploadInput = driver.findElement(By.id("attachCV"));
             uploadInput.sendKeys("./resume/AnkurKarna_Resume.pdf");
 
