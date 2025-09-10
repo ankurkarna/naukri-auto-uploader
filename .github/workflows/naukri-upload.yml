@@ -1,9 +1,9 @@
-name: Daily Naukri Resume Upload
+name: Naukri Resume Upload
 
 on:
   schedule:
-    - cron: "30 2 * * *"  # runs every day at 6 AM IST
-  workflow_dispatch:      # allows manual trigger
+    - cron: '0 2 * * *'  # runs daily at 8 AM IST (convert to UTC)
+  workflow_dispatch:
 
 jobs:
   upload:
@@ -13,20 +13,17 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Setup Java
+        uses: actions/setup-java@v3
         with:
-          python-version: '3.x'
+          distribution: temurin
+          java-version: '17'
 
-      - name: Install dependencies
-        run: pip install requests
+      - name: Unzip Selenium profile
+        run: |
+          mkdir -p selenium-profile/myprofile
+          unzip -o selenium-profile/myprofile.zip -d selenium-profile/myprofile
 
-      - name: Upload Resume to Naukri
-        env:
-          NAUK_AT: ${{ secrets.NAUK_AT }}
-          NAUK_OTL: ${{ secrets.NAUK_OTL }}
-          NAUK_UNID: ${{ secrets.NAUK_UNID }}
-          NKWAP: ${{ secrets.NKWAP }}
-          PS: ${{ secrets.PS }}
-          IS_LOGIN: ${{ secrets.IS_LOGIN }}
-        run: python upload_resume.py
+      - name: Run Selenium uploader
+        run: |
+          java -cp "path/to/selenium-jars/*:." NaukriUploader
