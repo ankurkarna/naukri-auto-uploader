@@ -2,21 +2,31 @@ name: Daily Naukri Resume Upload
 
 on:
   schedule:
-    - cron: "30 2 * * *" # 8:00 AM IST
-  workflow_dispatch:
+    - cron: "30 2 * * *"  # runs every day at 6 AM IST
+  workflow_dispatch:      # allows manual trigger
 
 jobs:
   upload:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.x"
-      - name: Install requests
+          python-version: '3.x'
+
+      - name: Install dependencies
         run: pip install requests
-      - name: Upload Resume
+
+      - name: Upload Resume to Naukri
         env:
-          NAUKRI_AUTH: ${{ secrets.NAUKRI_AUTH }}
+          NAUK_AT: ${{ secrets.NAUK_AT }}
+          NAUK_OTL: ${{ secrets.NAUK_OTL }}
+          NAUK_UNID: ${{ secrets.NAUK_UNID }}
+          NKWAP: ${{ secrets.NKWAP }}
+          PS: ${{ secrets.PS }}
+          IS_LOGIN: ${{ secrets.IS_LOGIN }}
         run: python upload_resume.py
