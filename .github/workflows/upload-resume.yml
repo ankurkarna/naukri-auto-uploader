@@ -1,0 +1,36 @@
+name: Naukri Resume Upload
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 8 AM IST (2:00 UTC)
+  workflow_dispatch:     # Manual trigger
+
+jobs:
+  upload:
+    runs-on: windows-latest
+
+    steps:
+      # 1. Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Setup Java and Maven
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+
+      # 3. Unzip Selenium Edge profile
+      - name: Unzip Selenium profile
+        run: |
+          Expand-Archive -Path ./selenium-profile/myprofile.zip -DestinationPath ./selenium-profile/myprofile -Force
+
+      # 4. Build Java project
+      - name: Build project
+        run: mvn clean compile
+
+      # 5. Run Selenium uploader
+      - name: Run resume upload
+        run: mvn exec:java -Dexec.mainClass="com.ankur.NaukriUploader"
