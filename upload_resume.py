@@ -1,22 +1,23 @@
-import requests
 import os
+import requests
 
-# API endpoint (replace with your user profile id if different)
-url = "https://www.naukri.com/cloudgateway-mynaukri/resman-aggregator-services/v0/users/self/profiles/cb2dd093eb56f31bee82190ebad747dede6f606e851cda08fcc93b141dd0abb8/advResume"
-
-headers = {
-    "authorization": os.environ["NAUKRI_AUTH"],
-    "x-http-method-override": "PUT",
-    "appid": "105",
-    "systemid": "105",
-    "user-agent": "Mozilla/5.0",
+cookies = {
+    "nauk_at": os.getenv("NAUK_AT"),
+    "nauk_otl": os.getenv("NAUK_OTL"),
+    "MYNAUKRI[UNID]": os.getenv("NAUK_UNID"),
+    "NKWAP": os.getenv("NKWAP"),
+    "PS": os.getenv("PS"),
+    "is_login": os.getenv("IS_LOGIN"),
 }
 
 files = {
-    "file": ("AnkurKarna_Resume.pdf", open("resume/AnkurKarna_Resume.pdf", "rb"), "application/pdf")
+    "uploadCv": open("resume/AnkurKarna_Resume.pdf", "rb")
 }
 
-response = requests.post(url, headers=headers, files=files)
+url = "https://www.naukri.com/mnjuser/profile/upload-cv"
 
-print("Status:", response.status_code)
-print("Response:", response.text)
+res = requests.post(url, cookies=cookies, files=files)
+
+print("Status:", res.status_code)
+print("Response (first 500 chars):")
+print(res.text[:500])
